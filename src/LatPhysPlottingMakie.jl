@@ -28,6 +28,10 @@ include("lattice_plotting_2d.jl")
 include("lattice_plotting_3d.jl")
 
 
+using LatPhysReciprocal
+using LatPhysBandstructures
+
+
 include("Bandstructures/Bandstructures.jl")
 
 
