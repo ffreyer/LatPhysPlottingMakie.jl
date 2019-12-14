@@ -37,7 +37,7 @@ function plotBandstructure(
     # else
     #     fig = gcf()
     # end
-    scene = Scene(resolution=100figsize)
+    scene = Scene(resolution=100 .* figsize)
 
 
 

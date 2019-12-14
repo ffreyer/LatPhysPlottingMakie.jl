@@ -1,19 +1,3 @@
-################################################################################
-#
-#   module LatPhysBandstructuresPlottingPyPlot
-#   -> PyPlot
-#   -> LatPhysBase
-#   -> LatPhysReciprocal
-#   -> LatPhysBandstructures
-#   -> LinearAlgebra
-#
-#   --> PLOTTING OF BANDSTRUCTURES AND FERMI SURFACES
-#           - 2D lattices
-#           - 3D lattices
-#
-################################################################################
-
-
 # include plotting of bandstructures
 include("bandstructure_plotting.jl")
 

@@ -32,7 +32,7 @@ function plotEnergyManifold(
     #   INITIAL SETTINGS
     ###########################
 
-    scene = Scene(resolution = 100figsize, scale_plot = false)
+    scene = Scene(resolution = 100 .* figsize, scale_plot = false)
     if plot_bz
         # plot the brillouin zone
         plotBrillouinZone(

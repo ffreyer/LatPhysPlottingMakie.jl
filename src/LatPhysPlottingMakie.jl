@@ -18,7 +18,7 @@ using Makie
 include("helper_functions.jl")
 include("colorcodes.jl")
 
-# Generic plotting by overwriting PyPlot.plot function
+# Generic plotting
 include("lattice_plotting_plot.jl")
 
 # Plotting of 2D lattices
