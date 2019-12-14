@@ -2,6 +2,7 @@ module LatPhysPlottingMakie
 
 using LatPhysBase
 
+using Requires
 using Colors
 using Makie
 
@@ -25,6 +26,9 @@ include("lattice_plotting_2d.jl")
 
 # Plotting of 3D lattices
 include("lattice_plotting_3d.jl")
+
+
+include("Bandstructures/Bandstructures.jl")
 
 
 end # module
