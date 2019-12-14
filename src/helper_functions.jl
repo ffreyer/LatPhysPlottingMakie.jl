@@ -226,7 +226,7 @@ end
 # Plot bonds based on line collections
 # https://gist.github.com/gizmaa/7214002#linecollection
 
-# 2D
+
 function plotBonds(
             bonds  :: Vector{B},
             sites  :: Vector{S},
