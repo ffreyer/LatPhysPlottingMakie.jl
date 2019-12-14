@@ -3,6 +3,12 @@ uuid = "dc53cbd7-ff03-4c33-8c1a-bdede5c834c0"
 authors = ["F Freyer <frederic481994@hotmail.de>"]
 version = "0.1.0"
 
+[deps]
+AbstractPlotting = "537997a7-5e4e-5d89-9595-2241ea00577e"
+Colors = "5ae59095-9a9b-59fe-a467-6f913c188581"
+LatPhysBase = "eec5c15a-e8bd-11e8-0d23-6799ca40c963"
+Makie = "ee78f7c6-11fb-53f2-987a-cfe4a2b5a57a"
+
 [compat]
 julia = "1"
 
