@@ -20,8 +20,8 @@ include("colorcodes.jl")
 # Generic plotting by overwriting PyPlot.plot function
 include("lattice_plotting_plot.jl")
 
-# # Plotting of 2D lattices
-# include("lattice_plotting_2d.jl")
+# Plotting of 2D lattices
+include("lattice_plotting_2d.jl")
 #
 # # Plotting of 3D lattices
 # include("lattice_plotting_3d.jl")
