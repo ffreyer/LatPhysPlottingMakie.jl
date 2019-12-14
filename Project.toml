@@ -1,0 +1,13 @@
+name = "LatPhysPlottingMakie"
+uuid = "dc53cbd7-ff03-4c33-8c1a-bdede5c834c0"
+authors = ["F Freyer <frederic481994@hotmail.de>"]
+version = "0.1.0"
+
+[compat]
+julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
