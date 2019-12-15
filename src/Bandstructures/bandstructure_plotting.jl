@@ -50,6 +50,9 @@ function plotBandstructure(
     # get the labels of these breaks
     k_point_labels = label.(path(bs))
 
+    E_min = Inf
+    E_max = -Inf
+
     # plot the band structure
     for s in 1:length(energies(bs))
         # push the next k point as index into the array
@@ -58,9 +61,12 @@ function plotBandstructure(
         xvals = range(k_point_indices[s], stop=k_point_indices[s+1], length=length(energies(bs)[s][1]))
         # plot all bands
         for band in energies(bs)[s]
+            minimum(band) < E_min && (E_min = minimum(band))
+            maximum(band) > E_max && (E_max = maximum(band))
             Makie.lines!(scene, xvals, band, color=color)
         end
     end
+    @info k_point_indices
 
 
 
@@ -70,10 +76,14 @@ function plotBandstructure(
 
     ax = scene[Axis]
 
-    ax[:ticks, :ranges_labels][] = (
-        (ticks_and_labels[1], k_point_indices),
-        (k_point_labels, ticks_and_labels[2])
-    )
+    # TODO
+    # Probably best to do completely custom axis?
+    
+    # This probably fails because the array lengths change
+    # ax[:ticks, :ranges_labels][] = (
+    #     (ax[:ticks, :ranges_labels][][1][1], k_point_indices),
+    #     (k_point_labels, ax[:ticks, :ranges_labels][][2][2])
+    # )
 
     # Hmm...
     # # configure ticks on x axis
@@ -86,9 +96,8 @@ function plotBandstructure(
 
     # plot vertical lines for each point
     # NOTE There's probably a better way to do this
-    E_min, E_max = extrema(extrema.(energies(bs)))
     points = [Point2f0(x, y) for x in k_point_indices for y in [E_min, E_max]]
-    Makie.linesegments!(scene, points, linestyle=:dashed, color=RGB(0.6, 0.6, 0.6))
+    Makie.linesegments!(scene, points, linestyle=:dash, color=RGB(0.6, 0.6, 0.6))
 
 
     ###########################

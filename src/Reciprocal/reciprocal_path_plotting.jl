@@ -20,11 +20,11 @@ function plot(
 
     scene = AbstractPlotting.current_scene()
     # plot all points in the path
-    Makie.scatter!(scene, Point{D, Float32}(points(path), color=color; kwargs...)
+    plotSites(points(path), site_radius, color; kwargs...)
     # connect the points
     Makie.lines!(
         scene,
-        Point{D, Float32}(point.(points(path))), # NOTE
+        Point{D, Float32}.(point.(points(path))), # NOTE
         color = color,
         linewidth = 1
     )

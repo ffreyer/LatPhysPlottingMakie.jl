@@ -13,6 +13,7 @@ LatPhysLatticeModification = "84ed28fe-f306-11e8-122d-2faba6147774"
 LatPhysReciprocal = "7a511e88-ebe4-11e8-1bac-67d16a536c98"
 LatPhysUnitcellLibrary = "9ab7acfc-e8ca-11e8-283d-b33250f7e765"
 Makie = "ee78f7c6-11fb-53f2-987a-cfe4a2b5a57a"
+Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 
 [compat]

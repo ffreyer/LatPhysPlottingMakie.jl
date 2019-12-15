@@ -21,17 +21,7 @@ function plotLattice(
     # max_value = maximum([abs(p[i]) for i in 1:2 for p in point.(sites(lattice))])
     xlim = lattice |> sites .|> point .|> (x -> x[1]) |> extrema
     ylim = lattice |> sites .|> point .|> (x -> x[2]) |> extrema
-    aspect = figsize[1] / figsize[2]
-    lattice_aspect = (xlim[2] - xlim[1]) / (ylim[2] - ylim[1])
-    if aspect >= lattice_aspect
-        # fix height, pad width
-        dw = (xlim[2] - xlim[1]) * (aspect / lattice_aspect - 1.0)
-        xlim = xlim .+ (-0.5dw, 0.5dw)
-    else
-        # fix width, pad height
-        dh = (ylim[2] - ylim[1]) * (lattice_aspect / aspect - 1.0)
-        ylim = ylim .+ (-0.5dh, 0.5dh)
-    end
+    xlim, ylim = centered_boundaries(figsize[1] / figsize[2], xlim, ylim)
 
     # limits are weird...
     # and resolution is in pixels

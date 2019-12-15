@@ -24,7 +24,9 @@ function plot(
             BZ <: AbstractBrillouinZone{R}
         }
 
+
     scene = AbstractPlotting.current_scene()
+
 
     # scatter all corners
     if BZ_corners
@@ -32,7 +34,7 @@ function plot(
         Makie.scatter!(
             scene,
             Point{D, Float32}[c for c in corners(bz)],
-            color = BZ_color
+            color = BZ_color,
         )
     end
 
@@ -40,7 +42,7 @@ function plot(
     # draw the surrounding faces
     for f in faces(bz)
         # obtain lists of x y and z values
-        points = [corners(bz)[i] for i in f]
+        points = Point{D, Float32}[corners(bz)[i] for i in f]
         # push the first element into the lists to close the loops
         push!(points, points[1])
         # plot the BZ face
@@ -48,9 +50,10 @@ function plot(
             scene,
             points,
             color = BZ_color,
-            linewidth = BZ_linewidth
+            linewidth = BZ_linewidth,
         )
     end
+    scene
 end
 
 # export the plot function
@@ -64,14 +67,7 @@ function plotBrillouinZone(
             figsize :: Tuple{<:Real, <:Real} = (6,6),
             coordinate_system :: Bool = false,
             kwargs...
-        ) where {
-            D, L, N, P <: AbstractReciprocalPoint{D},
-            B <: AbstractBond{L,N},
-            R <: AbstractReciprocalUnitcell{P,B},
-            BZ <: AbstractBrillouinZone{R}
-        }
-
-
+        ) where {BZ <: AbstractBrillouinZone}
     # create a new figure
     scene = Scene(
         resolution = 100 .* figsize,

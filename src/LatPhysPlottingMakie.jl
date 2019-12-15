@@ -3,8 +3,10 @@ module LatPhysPlottingMakie
 using LatPhysBase
 
 using Requires
-using Colors
-using Makie
+using Reexport
+
+@reexport using Colors
+@reexport using Makie
 
 
 # TODO
@@ -15,6 +17,7 @@ using Makie
 # - mess with theme
 
 # Plotting of bonds and sites and other stuff
+include("Makie_helpers.jl")
 include("helper_functions.jl")
 include("colorcodes.jl")
 
@@ -32,6 +35,7 @@ using LatPhysReciprocal
 using LatPhysBandstructures
 
 
+include("Reciprocal/Reciprocal.jl")
 include("Bandstructures/Bandstructures.jl")
 
 
