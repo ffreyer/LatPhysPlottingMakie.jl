@@ -1,11 +1,14 @@
 module LatPhysPlottingMakie
 
 using LatPhysBase
+using LatPhysReciprocal
+using LatPhysBandstructures
 
 using Requires
 using Reexport
 
 @reexport using Colors
+import GeometryTypes
 @reexport using Makie
 
 
@@ -31,12 +34,11 @@ include("lattice_plotting_2d.jl")
 include("lattice_plotting_3d.jl")
 
 
-using LatPhysReciprocal
-using LatPhysBandstructures
-
-
 include("Reciprocal/Reciprocal.jl")
 include("Bandstructures/Bandstructures.jl")
 
+
+# Special Makie related stuff
+include("fancy/Bandstructures.jl")
 
 end # module
