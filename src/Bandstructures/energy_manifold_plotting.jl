@@ -8,17 +8,31 @@
 function plotEnergyManifold(
         em::AEM; color::Vector{<:Integer} = [100,120,255], kwargs...
     ) where {AEM <: AbstractEnergyManifold}
-    plotEnergyManifold(em, color = RGB((color ./ 255)...); kwargs...)
+    plotEnergyManifold(em, color = RGBA((color ./ 255)..., 0.4); kwargs...)
 end
 function plotEnergyManifold(
             em :: AEM
             ;
             # new_figure :: Bool = true,
             figsize :: Tuple = (6,6),
-            color :: Colorant = RGB(0.39, 0.37, 1.0),
+            color :: Colorant = RGBA(0.39, 0.37, 1.0, 0.4),
             plot_bz :: Bool = true,
             ms :: Real = 0.5,
             BZ_corners :: Bool = false,
+            method :: Symbol = :contour,
+
+            # For contour plots
+            k_min :: Real = -1.0pi,
+            k_max :: Real = 2.0pi,
+            kx_min :: Real = k_min,
+            kx_max :: Real = k_max,
+            ky_min :: Real = k_min,
+            ky_max :: Real = k_max,
+            kz_min :: Real = k_min,
+            kz_max :: Real = k_max,
+            alpha :: Real = 1.0,
+            levels :: Real = 5,
+
             kwargs...
         ) where {
             LS, D, S <: AbstractSite{LS,D},
@@ -32,7 +46,12 @@ function plotEnergyManifold(
     #   INITIAL SETTINGS
     ###########################
 
-    scene = Scene(resolution = 100 .* figsize, scale_plot = false)
+    scene = Scene(
+        resolution = 100 .* figsize,
+        scale_plot = false,
+        transparency = true
+    )
+
     if plot_bz
         # plot the brillouin zone
         plotBrillouinZone(
@@ -49,10 +68,33 @@ function plotEnergyManifold(
     ###########################
 
     # obtain the points
-    k_points = kpoints(em)
-
-    # scatter all points
-    Makie.scatter!(scene, kpoints(em), color=color, markersize=ms)
+    if method == :contour
+        # TODO
+        # What should be the range here?
+        # Cutting one direction makes things easier to see...
+        xs = range(kx_min, kx_max, length=50)
+        ys = range(ky_min, ky_max, length=100)
+        zs = range(kz_min, kz_max, length=100)
+        contour!(
+            scene,
+            xs, ys, zs,
+            (x, y, z) -> minimum(eigvals(matrixAtK(em.h, [x, y, z]))),
+            levels = levels,
+            alpha = alpha,
+            transparency = alpha < 1.0
+        )
+    else
+        # scatter all points
+        Makie.scatter!(
+            scene,
+            Point{D, Float32}.(kpoints(em)),
+            color = color,
+            markersize = ms,
+            transparency = color.alpha < 1.0
+        )
+    end
+    # Adjust rotation speed
+    cameracontrols(scene).rotationspeed[] = 1f-2
 
     # return the figure object
     return scene

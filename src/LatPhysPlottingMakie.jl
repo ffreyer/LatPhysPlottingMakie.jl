@@ -4,6 +4,7 @@ using LatPhysBase
 
 using Requires
 using Reexport
+using LinearAlgebra
 
 @reexport using Colors
 @reexport using Makie
