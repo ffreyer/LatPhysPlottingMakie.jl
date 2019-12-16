@@ -22,7 +22,7 @@ function plotEnergyManifold(
             method :: Symbol = :contour,
 
             # For contour plots
-            k_min :: Real = -1.0pi,
+            k_min :: Real = -2.0pi,
             k_max :: Real = 2.0pi,
             kx_min :: Real = k_min,
             kx_max :: Real = k_max,
@@ -32,6 +32,7 @@ function plotEnergyManifold(
             kz_max :: Real = k_max,
             alpha :: Real = 1.0,
             levels :: Real = 5,
+            N_points :: Integer = 100,
 
             kwargs...
         ) where {
@@ -72,9 +73,9 @@ function plotEnergyManifold(
         # TODO
         # What should be the range here?
         # Cutting one direction makes things easier to see...
-        xs = range(kx_min, kx_max, length=50)
-        ys = range(ky_min, ky_max, length=100)
-        zs = range(kz_min, kz_max, length=100)
+        xs = range(kx_min, kx_max, length=N_points)
+        ys = range(ky_min, ky_max, length=N_points)
+        zs = range(kz_min, kz_max, length=N_points)
         contour!(
             scene,
             xs, ys, zs,
