@@ -106,7 +106,6 @@ end
 
 # plotting based on scattering
 # TODO combine 2D and 2D methods
-# TODO only need to make site_label_offset generic
 function plotSites(
         sites   :: Vector{S},
         radius  :: Real,
@@ -128,10 +127,11 @@ function plotSites(
         site_label_offset :: Vector{<:Real} = Float64[],
         marker = nothing,
         overdraw = nothing,
+        markersize = radius,
         kwargs...
     ) where {L, D}
     _plotSites(
-        sites, radius, color,
+        sites, color,
         site_labels = site_labels,
         site_label_fontsize = site_label_fontsize,
         site_label_offset = if isempty(site_label_offset)
@@ -140,17 +140,18 @@ function plotSites(
             site_label_offset
         end,
         marker = if marker == nothing
-            Sphere(Point{D, Float32}(0.0), Float32(D == 3 ? radius/25 : radius))
+            Sphere(Point{D, Float32}(0.0), 1f0)
         else
             marker
         end,
+        markersize = markersize,
         overdraw = overdraw == nothing ? D == 2 : overdraw;
         kwargs...
     )
 end
 # Actually plot
 function _plotSites(
-        sites::Vector{<: AbstractSite{L,D}}, radius, color;
+        sites::Vector{<: AbstractSite{L,D}}, color;
         site_labels, site_label_fontsize, site_label_offset,
         kwargs...
     ) where {L, D}
@@ -248,7 +249,7 @@ function plotBonds(
         radius :: Real,
         color
         ;
-        marker = Cylinder(Point3f0(0.0), Point3f0(0, 0, 1), 0.05f0),
+        marker = Cylinder(Point3f0(0.0), Point3f0(0, 0, 1), Float32(radius)),
         kwargs...
     ) where {LS}
 

@@ -3,8 +3,8 @@ function plot(
     		lattice :: L
             ;
             site_labels :: Bool = false,
-    		site_radius :: Real = 25,
-    		bond_thickness :: Real = 8,
+    		site_radius :: Real = 0.1,
+    		bond_thickness :: Real = 0.05,
     		visualize_periodic :: Bool = false,
     		colorcode_sites :: Union{Symbol,Dict} = Dict(),
     		colorcode_bonds :: Union{Symbol,Dict} = Dict(),
