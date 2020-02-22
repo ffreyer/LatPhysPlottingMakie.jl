@@ -6,48 +6,42 @@
 
 # PLOTTING SITES IN 2D (but complex)
 function plotSiteComplex(
-            site    :: AbstractSite,
-            radius  :: Real,
-            color   :: Vector{<:Integer}
-            ;
-            kwargs...
-        )
+        site    :: AbstractSite,
+        radius  :: Real,
+        color   :: Vector{<:Integer}
+        ;
+        kwargs...
+    )
     plotSiteComplex(site, radius, RGB((color ./ 255)...); kwargs...)
 end
 function plotSiteComplex(
-            site    :: S,
-            radius  :: Real,
-            color   :: Colorant
-            ;
-            kwargs...
-        ) where {L,S<:AbstractSite{L,2}}
+        site    :: S,
+        radius  :: Real,
+        color   :: Colorant
+        ;
+        kwargs...
+    ) where {L, S<:AbstractSite{L,2}}
 
-    p = Point2f0(point(site))
-    shape = Circle(Point2f0(0), Float32(radius))
     scene = AbstractPlotting.current_scene()
-    Makie.scatter!(scene, [p], marker=shape, color=color)
+    Makie.scatter!(scene, site, markersize=radius, color=color; kwargs...)
 end
 
 # PLOTTING SITES IN 3D (but complex)
 function plotSiteComplex(
-            site    :: S,
-            radius  :: Real,
-            color   :: Colorant
-            ;
-            detail  :: Int64 = 7,
-            kwargs...
-        ) where {L,S<:AbstractSite{L,3}}
+        site    :: S,
+        radius  :: Real,
+        color   :: Colorant
+        ;
+        kwargs...
+    ) where {L,S<:AbstractSite{L,3}}
 
-    shape = Sphere(Point3f0(0), Float32(radius))
-    mesh = GLNormalUVMesh(shape, detail)
     scene = AbstractPlotting.current_scene()
-    Makie.meshscatter!(scene, Point3f0[point(site)], marker=shape, color=color)
+    Makie.meshscatter!(scene, site, markersize=radius, color=color; kwargs...)
 end
 
 
 
 # TODO combine 2D and 2D methods
-# TODO only need to make site_label_offset generic
 function plotSite(
             site    :: AbstractSite,
             radius  :: Real,
@@ -70,7 +64,7 @@ function plotSite(
         ) where {L,S<:AbstractSite{L,2}}
 
     scene = AbstractPlotting.current_scene()
-    Makie.scatter!(scene, Point2f0[point(site)], color=color)
+    Makie.scatter!(scene, site, markersize=radius, color=color; kwargs...)
     # maybe annotate the label as text
     if site_labels
         Makie.text!(
@@ -96,7 +90,7 @@ function plotSite(
         ) where {L,S<:AbstractSite{L,3}}
 
     scene = AbstractPlotting.current_scene()
-    Makie.scatter!(scene, Point3f0[point(site)], color=color)
+    Makie.scatter!(scene, site, markersize=radius, color=color; kwargs...)
     # maybe annotate the label as text
     if site_labels
         Makie.text!(
@@ -114,28 +108,28 @@ end
 # TODO combine 2D and 2D methods
 # TODO only need to make site_label_offset generic
 function plotSites(
-            sites   :: Vector{S},
-            radius  :: Real,
-            color   :: Vector{<:Integer}
-            ;
-            kwargs...
-        ) where {L,S<:AbstractSite}
+        sites   :: Vector{S},
+        radius  :: Real,
+        color   :: Vector{<:Integer}
+        ;
+        kwargs...
+    ) where {L,S<:AbstractSite}
     plotSites(sites, radius, RGB((color ./ 255)...); kwargs...)
 end
 
 # Setup defaults (2D, 3D)
 function plotSites(
-            sites   :: Vector{<: AbstractSite{L,D}},
-            radius  :: Real,
-            color   :: Colorant
-            ;
-            site_labels :: Bool = true,
-            site_label_fontsize :: Real = 12,
-            site_label_offset :: Vector{<:Real} = Float64[],
-            marker = nothing,
-            overdraw = nothing,
-            kwargs...
-        ) where {L, D}
+        sites   :: Vector{<: AbstractSite{L,D}},
+        radius  :: Real,
+        color   :: Colorant
+        ;
+        site_labels :: Bool = true,
+        site_label_fontsize :: Real = 12,
+        site_label_offset :: Vector{<:Real} = Float64[],
+        marker = nothing,
+        overdraw = nothing,
+        kwargs...
+    ) where {L, D}
     _plotSites(
         sites, radius, color,
         site_labels = site_labels,
@@ -156,23 +150,14 @@ function plotSites(
 end
 # Actually plot
 function _plotSites(
-            sites::Vector{<: AbstractSite{L,D}}, radius, color;
-            site_labels, site_label_fontsize, site_label_offset,
-            marker, overdraw,
-            kwargs...
-        ) where {L, D}
+        sites::Vector{<: AbstractSite{L,D}}, radius, color;
+        site_labels, site_label_fontsize, site_label_offset,
+        kwargs...
+    ) where {L, D}
 
     # scatter the points
     scene = AbstractPlotting.current_scene()
-    # Can we do this better?
-    Makie.meshscatter!(
-        scene,
-        Point{D, Float32}[point(s) for s in sites],
-        marker = marker,
-        color = color,
-        overdraw = overdraw;
-        kwargs...
-    )
+    Makie.meshscatter!(scene, sites, color = color; kwargs...)
 
     # maybe annotate the label as text
     if site_labels
@@ -224,11 +209,7 @@ function plotBond(
 
     # TODO radius -> linewidth?
     scene = AbstractPlotting.current_scene()
-    Makie.lines!(
-        scene,
-        Point{D, Float32}[point(site_from), point(site_to)],
-        color=color
-    )
+    Makie.lines!(scene, site_from, site_to, color=color, linewidth=radius; kwargs...)
 end
 
 
@@ -248,27 +229,17 @@ function plotBonds(
     plotBonds(bonds, sites, radius, RGB((color ./ 255)...); kwargs...)
 end
 function plotBonds(
-            bonds  :: Vector{B},
-            sites  :: Vector{S},
-            radius :: Real,
-            color  :: Colorant
-            ;
-            kwargs...
-        ) where {LS, S<:AbstractSite{LS,2}, B<:AbstractBond}
+        bonds  :: Vector{B},
+        sites  :: Vector{S},
+        radius :: Real,
+        color  :: Colorant
+        ;
+        kwargs...
+    ) where {LS, S<:AbstractSite{LS,2}, B<:AbstractBond}
 
-    # make a list of all lines
-    lines = Point{2, Float32}[]
-    for b in bonds
-        # get the coordinates to where the bond is pointing
-        p1 = Point{2, Float32}(point(sites[from(b)]))
-        # get the coordinates to where the bond is pointing
-        p2 = Point{2, Float32}(point(sites[to(b)]))
-        # push a new entry into the line list
-        push!(lines, p1, p2)
-    end
-
+    # labels :(
     scene = AbstractPlotting.current_scene()
-    Makie.linesegments!(scene, lines, color = color) # labels :(
+    Makie.linesegments!(scene, bonds, sites, color = color; linewidth=radius, kwargs...)
 end
 
 function plotBonds(
@@ -283,22 +254,16 @@ function plotBonds(
 
 
     # make a list of all lines
-    startat = Point{3, Float32}[]
     dir = Point{3, Float32}[]
     for b in bonds
-        # get the coordinates to where the bond is pointing
         p1 = Point{3, Float32}(point(sites[from(b)]))
-        # get the coordinates to where the bond is pointing
         p2 = Point{3, Float32}(point(sites[to(b)]))
-        # push a new entry into the line list
-        push!(startat, p1)
         push!(dir, p2 - p1)
     end
 
     scene = AbstractPlotting.current_scene()
     Makie.meshscatter!(
-        scene,
-        startat,
+        scene, bonds, sites,
         marker = marker,
         rotation = normalize.(dir),
         markersize = norm.(dir),
