@@ -8,6 +8,7 @@ using LinearAlgebra
 
 @reexport using Colors
 @reexport using Makie
+using GeometryTypes
 
 
 # TODO

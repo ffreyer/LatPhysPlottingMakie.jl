@@ -8,8 +8,15 @@ function plot(
     		visualize_periodic :: Bool = false,
     		colorcode_sites :: Union{Symbol,Dict} = Dict(),
     		colorcode_bonds :: Union{Symbol,Dict} = Dict(),
+            site_primitive = nothing,
+            # bond_primitive = nothing, TODO
             kwargs...
-        ) where {LS,D,LB,N,S<:AbstractSite{LS,D},B<:AbstractBond{LB,N},U,L<:AbstractLattice{S,B,U}}
+        ) where {
+            LS, D, LB, N,
+            S <: AbstractSite{LS, D},
+            B <: AbstractBond{LB, N},
+            U, L <: AbstractLattice{S, B, U}
+        }
 
 
     ##########-------------------------------
@@ -88,6 +95,7 @@ function plot(
             site_radius,
             color;
             site_labels = site_labels,
+            marker = site_primitive,
             kwargs...
         )
     end
