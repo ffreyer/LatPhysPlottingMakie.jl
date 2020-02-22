@@ -41,4 +41,6 @@ include("Reciprocal/Reciprocal.jl")
 include("Bandstructures/Bandstructures.jl")
 
 
+include("MakieExtensions.jl")
+
 end # module
