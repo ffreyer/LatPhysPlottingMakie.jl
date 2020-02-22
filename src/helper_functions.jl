@@ -17,7 +17,7 @@ end
 function plotSiteComplex(
         site    :: S,
         radius  :: Real,
-        color   :: Colorant
+        color
         ;
         kwargs...
     ) where {L, S<:AbstractSite{L,2}}
@@ -30,7 +30,7 @@ end
 function plotSiteComplex(
         site    :: S,
         radius  :: Real,
-        color   :: Colorant
+        color
         ;
         kwargs...
     ) where {L,S<:AbstractSite{L,3}}
@@ -55,7 +55,7 @@ end
 function plotSite(
             site    :: S,
             radius  :: Real,
-            color   :: Colorant
+            color
             ;
             site_labels :: Bool = true,
             site_label_fontsize :: Real = 12,
@@ -81,7 +81,7 @@ end
 function plotSite(
             site    :: S,
             radius  :: Real,
-            color   :: Colorant
+            color
             ;
             site_labels :: Bool = true,
             site_label_fontsize :: Real = 12,
@@ -121,7 +121,7 @@ end
 function plotSites(
         sites   :: Vector{<: AbstractSite{L,D}},
         radius  :: Real,
-        color   :: Colorant
+        color
         ;
         site_labels :: Bool = true,
         site_label_fontsize :: Real = 12,
@@ -202,7 +202,7 @@ function plotBond(
             site_from :: AbstractSite{L,D},
             site_to   :: AbstractSite{L,D},
             radius    :: Real,
-            color     :: Colorant
+            color
             ;
             kwargs...
         ) where {L,D}
@@ -232,7 +232,7 @@ function plotBonds(
         bonds  :: Vector{B},
         sites  :: Vector{S},
         radius :: Real,
-        color  :: Colorant
+        color
         ;
         kwargs...
     ) where {LS, S<:AbstractSite{LS,2}, B<:AbstractBond}
@@ -246,7 +246,7 @@ function plotBonds(
         bonds  :: Vector{<:AbstractBond},
         sites  :: Vector{<:AbstractSite{LS, 3}},
         radius :: Real,
-        color  :: Colorant
+        color
         ;
         marker = Cylinder(Point3f0(0.0), Point3f0(0, 0, 1), 0.05f0),
         kwargs...
