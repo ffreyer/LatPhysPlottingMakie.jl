@@ -10,6 +10,8 @@ function plot(
     		colorcode_bonds :: Union{Symbol,Dict} = Dict(),
             site_primitive = nothing,
             # bond_primitive = nothing, TODO
+            color_fallback_site = RGB(0.4, 0.3, 0.9),
+            color_fallback_bond = RGB(1.0, 1.0, 1.0),
             kwargs...
         ) where {
             LS, D, LB, N,
@@ -24,11 +26,9 @@ function plot(
     ##########-------------------------------
 
     # set the fallback colors (site)
-    color_fallback_site = RGB(0.2, 0.2, 0.2)
     label_fallback_site = getDefaultLabel(LS)
 
     # set the fallback colors (bond)
-    color_fallback_bond = RGB(0.04, 0.04, 0.04) # NOTE that light?
     label_fallback_bond = getDefaultLabel(LB)
 
     # TODO automatically set dictonaries
