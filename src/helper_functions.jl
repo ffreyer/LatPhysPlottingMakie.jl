@@ -140,13 +140,7 @@ function plotSites(
             site_label_offset
         end,
         marker = if marker == nothing
-            m = GLNormalMesh(Sphere(Point{D, Float32}(0.0), 1f0), 30)
-            # band-aid shading fix. See
-            # https://github.com/JuliaGeometry/GeometryTypes.jl/issues/197
-            GLNormalMesh(
-                m.vertices, m.faces, m.vertices,
-                m.texturecoordinates, m.color, m.attributes, m.attribute_id
-            )
+            Sphere(Point{D, Float32}(0.0), 1f0)
         else
             marker
         end,
