@@ -1,5 +1,7 @@
 import AbstractPlotting: convert_arguments
 import AbstractPlotting: PointBased
+using Statistics: mean
+using GeometryBasics
 
 
 
@@ -65,6 +67,64 @@ function convert_arguments(::PointBased, p::P) where {
         D, P <: AbstractReciprocalPath{<: AbstractReciprocalPoint{D}}
     }
     (Point{D, Float32}.(point.(points(p))),)
+end
+
+
+# Brillouin Zone
+function convert_arguments(P::Type{<:Scatter}, bz::BZ) where {
+        D, PT <: AbstractReciprocalPoint{D},
+        R <: AbstractReciprocalUnitcell{PT},
+        BZ <: AbstractBrillouinZone{R}
+    }
+    convert_arguments(P, Point{D, Float32}[c for c in corners(bz)])
+end
+
+# TODO mabye duplicate points for sharp edges?
+function BZ_to_mesh(bz::BZ) where {
+        D, PT <: AbstractReciprocalPoint{D},
+        R <: AbstractReciprocalUnitcell{PT},
+        BZ <: AbstractBrillouinZone{R}
+    }
+    # I assume that every face is flat and rotates around a central point
+    points = Point{D, Float32}.(corners(bz))
+    _faces = GLTriangleFace[]
+    for f in LatPhysReciprocal.faces(bz)
+        center = mean(points[f])
+        push!(points, center)
+        c = length(points)
+        append!(_faces, GLTriangleFace.(c, f[1:end-1], f[2:end]))
+        push!(_faces, GLTriangleFace(c, f[end], f[1]))
+    end
+    normal_mesh(points, _faces)
+end
+convert_arguments(P::Type{<:AbstractPlotting.Mesh}, bz::AbstractBrillouinZone) =
+    convert_arguments(P, BZ_to_mesh(bz))
+convert_arguments(P::Type{<:AbstractPlotting.Wireframe}, bz::AbstractBrillouinZone) =
+    convert_arguments(P, BZ_to_mesh(bz))
+
+# Only really works with one face
+function convert_arguments(P::Type{<:Lines}, bz::BZ) where {
+        D, PT <: AbstractReciprocalPoint{D},
+        R <: AbstractReciprocalUnitcell{PT},
+        BZ <: AbstractBrillouinZone{R}
+    }
+    points = Point{D, Float32}.(corners(bz))
+    face_points = [points[i] for f in LatPhysReciprocal.faces(bz) for i in [f..., f[1]]]
+    convert_arguments(P, face_points)
+end
+
+function convert_arguments(P::Type{<:LineSegments}, bz::BZ) where {
+        D, PT <: AbstractReciprocalPoint{D},
+        R <: AbstractReciprocalUnitcell{PT},
+        BZ <: AbstractBrillouinZone{R}
+    }
+    points = Point{D, Float32}.(corners(bz))
+    face_points = Point{D, Float32}[]
+    for f in LatPhysReciprocal.faces(bz)
+        ps = [points[i] for i in [f..., f[1]] for _ in 1:2][2:end-1]
+        append!(face_points, ps)
+    end
+    convert_arguments(P, face_points)
 end
 
 
@@ -194,4 +254,21 @@ function AbstractPlotting.plot!(p::Plot(P)) where {P <: AbstractReciprocalPath}
     lc = pop!(stripped, :linecolor)
     lines!(p, p[1], color = lc; stripped...)
     scatter!(p, p[1], color = mc; stripped...)
+end
+
+
+
+# Reciprocal Path
+########################################
+
+# TODO: use spheres as corners?
+function default_theme(scene::SceneLike, ::Type{<: Plot(BZ)}) where {BZ<:AbstractBrillouinZone}
+    Attributes(
+        BZ_corners = true
+    )
+end
+
+function AbstractPlotting.plot!(p::Plot(BZ)) where {BZ <: AbstractBrillouinZone}
+    linesegments!(p, p[1]; Attributes(p)...)
+    scatter!(p, p[1]; Attributes(p)..., visible=p[:BZ_corners])
 end
