@@ -176,6 +176,9 @@ end
 
 
 # Reciprocal Path
+########################################
+
+
 # Not gonna do special 3D paths now...
 # see lattice recipe if you want to add it
 function default_theme(scene::SceneLike, ::Type{<: Plot(P)}) where {P<:AbstractReciprocalPath}
@@ -187,7 +190,6 @@ end
 
 function AbstractPlotting.plot!(p::Plot(P)) where {P <: AbstractReciprocalPath}
     stripped = Attributes(p)
-    @info stripped
     mc = pop!(stripped, :markercolor)
     lc = pop!(stripped, :linecolor)
     lines!(p, p[1], color = lc; stripped...)
