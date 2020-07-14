@@ -1,5 +1,5 @@
 import AbstractPlotting: convert_arguments
-using AbstractPlotting: PointBased
+import AbstractPlotting: PointBased
 
 
 
@@ -7,26 +7,16 @@ using AbstractPlotting: PointBased
 ### Basic extension
 ################################################################################
 
+
 # Sites
+convert_arguments(::PointBased, s::S) where {T, D, S<:AbstractSite{T, D}} =
+    ([s |> point |> Point{D, Float32}],)
+convert_arguments(::PointBased, s::Vector{S}) where {T, D, S<:AbstractSite{T, D}} =
+    (s .|> point .|> Point{D, Float32},)
 
-
-# These shouldn't really exist (single site scatter)
-convert_arguments(P::Type{<:Scatter}, s::S) where {T, D, S<:AbstractSite{T, D}} =
-    convert_arguments(P, [p |> point |> Point{D, Float32}])
-convert_arguments(P::Type{<:MeshScatter}, s::S) where {T, D, S<:AbstractSite{T, D}} =
-    convert_arguments(P, [p |> point |> Point{D, Float32}])
-
-
-convert_arguments(P::Type{<:Scatter}, s::Vector{S}) where {
-    T, D, S<:AbstractSite{T, D}
-} = convert_arguments(P, s .|> point .|> Point{D, Float32})
-convert_arguments(P::Type{<:MeshScatter}, s::Vector{S}) where {
-    T, D, S<:AbstractSite{T, D}
-} = convert_arguments(P, s .|> point .|> Point{D, Float32})
 
 
 # Bonds
-
 
 # These shouldn't really exist (single bond from two sites)
 for T in (LineSegments, Lines)
@@ -70,17 +60,27 @@ convert_arguments(P::Type{<:LineSegments}, l::AbstractLattice) =
 
 
 
+# ReciprocalPath
+function convert_arguments(::PointBased, p::P) where {
+        D, P <: AbstractReciprocalPath{<: AbstractReciprocalPoint{D}}
+    }
+    (Point{D, Float32}.(point.(points(p))),)
+end
+
+
+
 ################################################################################
 ### Full extensions
 ################################################################################
 
 
 
-import AbstractPlotting: Plot, default_theme, plot!, automatic
+import AbstractPlotting: Plot, default_theme, plot!, automatic, Attributes
 
 # TODO: this probably exists in AbstractPlotting...
 const_lift(o::Node) = o
 const_lift(x) = Node(x)
+#Attributes(p::AbstractPlot; kwargs...) = merge(Attributes(; kwargs...), Attributes(p))
 
 
 
@@ -171,4 +171,25 @@ function AbstractPlotting.plot!(p::Plot(L)) where {
         markersize = p[:site_size],
         marker = p[:site_marker]
     )
+end
+
+
+
+# Reciprocal Path
+# Not gonna do special 3D paths now...
+# see lattice recipe if you want to add it
+function default_theme(scene::SceneLike, ::Type{<: Plot(P)}) where {P<:AbstractReciprocalPath}
+    Attributes(
+        markercolor = :gray65,
+        linecolor = :black
+    )
+end
+
+function AbstractPlotting.plot!(p::Plot(P)) where {P <: AbstractReciprocalPath}
+    stripped = Attributes(p)
+    @info stripped
+    mc = pop!(stripped, :markercolor)
+    lc = pop!(stripped, :linecolor)
+    lines!(p, p[1], color = lc; stripped...)
+    scatter!(p, p[1], color = mc; stripped...)
 end
