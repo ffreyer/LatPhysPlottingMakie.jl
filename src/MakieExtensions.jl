@@ -129,6 +129,23 @@ end
 
 
 
+# Bandstructure (doesn't really make sense for anything but scatter, whatever)
+function convert_arguments(::PointBased, s::AbstractBandstructure)
+    bands = b.bands
+    points = Point2f0[]
+    N = length(bands[1][1])
+    for i in eachindex(bands)
+        for j in eachindex(bands[i])
+            append!(points, Point2f0.(
+                N * (i-1) .+ eachindex(bands[i][j]),
+                bands[i][j]
+            ))
+        end
+    end
+    (points,)
+end
+
+
 ################################################################################
 ### Full extensions
 ################################################################################
@@ -271,4 +288,33 @@ end
 function AbstractPlotting.plot!(p::Plot(BZ)) where {BZ <: AbstractBrillouinZone}
     linesegments!(p, p[1]; Attributes(p)...)
     scatter!(p, p[1]; Attributes(p)..., visible=p[:BZ_corners])
+end
+
+
+
+# Bandstructure
+########################################
+
+# Not using lines here to make this very... interactive?
+# Using scatter allows us to collect all points here, which means
+# the number of bands in a bandstructure can also change without breaking the plot
+function default_theme(scene::SceneLike, ::Type{<: Plot(BS)}) where {BS <: AbstractBandstructure}
+    Attributes()
+end
+
+function AbstractPlotting.plot!(p::Plot(BZ)) where {BZ <: AbstractBandstructure}
+    bs = const_lift(p[1])
+    points = map(bs) do bs
+        k_point_indices = zeros(Int64, length(energies(bs))+1)
+        out = Point2f0[]
+        for s in 1:length(energies(bs))
+            k_point_indices[s+1] = length(energies(bs)[s][1]) + k_point_indices[s] - 1
+            xvals = range(k_point_indices[s], stop=k_point_indices[s+1], length=length(energies(bs)[s][1]))
+            for band in energies(bs)[s]
+                append!(out, Point2f0.(xvals, band))
+            end
+        end
+        out
+    end
+    scatter!(p, points; Attributes(p)...)
 end
