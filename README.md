@@ -32,18 +32,6 @@ plot(l)
 
 ![](https://github.com/ffreyer/LatPhysPlottingMakie.jl/blob/assets/assets/lattice2D.png)
 
-Using MakieLayout you fix the aspect ratio to one (and generally make this plot nicer).
-
-```julia
-using Makie.AbstractPlotting.MakieLayout
-scene, layout = layoutscene(resolution=(600, 600))
-ax = layout[1, 1] = LAxis(scene)
-colsize!(layout, 1, Aspect(1, 1))
-plot!(ax, l)
-scene
-```
-![](https://github.com/ffreyer/LatPhysPlottingMakie.jl/blob/assets/assets/Lattice2D_MakieLayout.png)
-
 
 ### Reciprocal Path + Brillouin zone
 
