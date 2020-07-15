@@ -146,6 +146,46 @@ function convert_arguments(::PointBased, s::AbstractBandstructure)
 end
 
 
+
+# Energy Manifold
+function convert_arguments(P::Type{<:Scatter}, em::EM) where {
+        LS, D, S <: AbstractSite{LS,D},
+        L, UC <: AbstractUnitcell{S},
+        H <: AbstractHamiltonian{L,UC},
+        EM <: AbstractEnergyManifold{H}
+    }
+    convert_arguments(P, Point{D, Float32}.(kpoints(em)))
+end
+function convert_arguments(P::Type{<:Contour}, em::EM) where {
+        LS, S <: AbstractSite{LS,2},
+        L, UC <: AbstractUnitcell{S},
+        H <: AbstractHamiltonian{L,UC},
+        EM <: AbstractEnergyManifold{H}
+    }
+    convert_arguments(P,
+        range(-2pi, 2pi, length=100),
+        range(-2pi, 2pi, length=100),
+        (x, y) -> minimum(eigvals(matrixAtK(em.h, [x, y])))
+    )
+end
+# Why doesn't this work?
+# function convert_arguments(P::Type{<:Contour}, em::EM) where {
+#         LS, S <: AbstractSite{LS,3},
+#         L, UC <: AbstractUnitcell{S},
+#         H <: AbstractHamiltonian{L,UC},
+#         EM <: AbstractEnergyManifold{H}
+#     }
+#     xs = range(-2pi, 2pi, length=100)
+#     ys = range(-2pi, 2pi, length=100)
+#     zs = range(-2pi, 2pi, length=100)
+#     values = [
+#         minimum(eigvals(matrixAtK(em.h, [x, y, z])))
+#         for x in xs, y in ys, z in zs
+#     ]
+#     convert_arguments(Contour3d, values)
+# end
+
+
 ################################################################################
 ### Full extensions
 ################################################################################
