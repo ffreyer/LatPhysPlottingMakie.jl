@@ -1,10 +1,3 @@
-import AbstractPlotting: convert_arguments
-import AbstractPlotting: PointBased
-using Statistics: mean
-using GeometryBasics
-
-
-
 ################################################################################
 ### Basic extension
 ################################################################################
@@ -190,9 +183,6 @@ end
 ### Full extensions
 ################################################################################
 
-
-
-import AbstractPlotting: Plot, default_theme, plot!, automatic, Attributes
 
 # TODO: this probably exists in AbstractPlotting...
 const_lift(o::Node) = o
