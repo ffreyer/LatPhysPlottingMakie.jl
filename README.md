@@ -2,6 +2,8 @@
 
 LatPhysPlottingMakie is a [Makie](https://github.com/JuliaPlots/Makie.jl) plotting extension for [LatticePhysics](https://github.com/janattig/LatticePhysics.jl). It doesn't follow the definitions from [LatPhysPlottingPyPlot](https://github.com/janattig/LatPhysPlottingPyPlot.jl). Instead this package adds conversions to enable plotting with Makies native functions. Where applicable one can use `lines`, `scatter`, etc to plot objects from `LatticePhysics`. Most objects also have a `plot()` definition, which may include multiple native plots (for example `plot(lattice)` include `lines` and `scatter` to draw both bonds and sites).
 
+This may require `AbstractPlotting#master`.
+
 ## Simple Examples
 
 Here are some example which aim to show off what this package enables. As such the plots are not touched up to be particularly pretty. For this purpose we refer to [Makie](https://github.com/JuliaPlots/Makie.jl) and [MakieLayout](https://github.com/jkrumbiegel/MakieLayout.jl) which is currently being merged with Makie. We may also include helper functions in the future to do theming of plots. (Some of these already exist in the form of `setup_axis!()` and `VestaTheme()`)
