@@ -123,21 +123,31 @@ end
 
 
 # Bandstructure (doesn't really make sense for anything but scatter, whatever)
-function convert_arguments(::PointBased, s::AbstractBandstructure)
-    bands = b.bands
+function convert_arguments(P::Type{<:Scatter}, bs::AbstractBandstructure)
+    k_point_indices = zeros(Int64, length(energies(bs))+1)
     points = Point2f0[]
-    N = length(bands[1][1])
-    for i in eachindex(bands)
-        for j in eachindex(bands[i])
-            append!(points, Point2f0.(
-                N * (i-1) .+ eachindex(bands[i][j]),
-                bands[i][j]
-            ))
+    for s in 1:length(energies(bs))
+        k_point_indices[s+1] = length(energies(bs)[s][1]) + k_point_indices[s] - 1
+        xvals = range(k_point_indices[s], stop=k_point_indices[s+1], length=length(energies(bs)[s][1]))
+        for band in energies(bs)[s]
+            append!(points, Point2f0.(xvals, band))
         end
     end
-    (points,)
+    convert_arguments(P, points)
 end
 
+function convert_arguments(P::Type{<:LineSegments}, bs::AbstractBandstructure)
+    k_point_indices = zeros(Int64, length(energies(bs))+1)
+    points = Point2f0[]
+    for s in 1:length(energies(bs))
+        k_point_indices[s+1] = length(energies(bs)[s][1]) + k_point_indices[s] - 1
+        xvals = range(k_point_indices[s], stop=k_point_indices[s+1], length=length(energies(bs)[s][1]))
+        for band in energies(bs)[s]
+            append!(points, [p for p in Point2f0.(xvals, band) for _ in 1:2][2:end-1])
+        end
+    end
+    convert_arguments(P, points)
+end
 
 
 # Energy Manifold
@@ -332,19 +342,6 @@ function default_theme(scene::SceneLike, ::Type{<: Plot(BS)}) where {BS <: Abstr
     Attributes()
 end
 
-function AbstractPlotting.plot!(p::Plot(BZ)) where {BZ <: AbstractBandstructure}
-    bs = const_lift(p[1])
-    points = map(bs) do bs
-        k_point_indices = zeros(Int64, length(energies(bs))+1)
-        out = Point2f0[]
-        for s in 1:length(energies(bs))
-            k_point_indices[s+1] = length(energies(bs)[s][1]) + k_point_indices[s] - 1
-            xvals = range(k_point_indices[s], stop=k_point_indices[s+1], length=length(energies(bs)[s][1]))
-            for band in energies(bs)[s]
-                append!(out, Point2f0.(xvals, band))
-            end
-        end
-        out
-    end
-    scatter!(p, points; Attributes(p)...)
+function AbstractPlotting.plot!(p::Plot(BS)) where {BS <: AbstractBandstructure}
+    linesegments!(p, const_lift(p[1]); Attributes(p)...)
 end
