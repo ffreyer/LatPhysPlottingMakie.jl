@@ -213,8 +213,10 @@ function default_theme(scene::SceneLike, ::Type{<: Plot(LT)}) where {
         site_color = :orange,
         site_size = 0.1,
         site_marker = Sphere(Point3f0(0), 1f0),
+        # site_matcap = nothing,
         bond_color = :white,
-        bond_width = 0.05
+        bond_width = 0.05,
+        # bond_matcap = nothing
     )
 end
 
@@ -222,16 +224,26 @@ function AbstractPlotting.plot!(p::Plot(LT)) where {
         T, S <: AbstractSite{T, 3}, LT <: AbstractLattice{S}
     }
     lattice = const_lift(p[1])
-    meshscatter!(
-        p, lattice,
-        color = p[:site_color], markersize = p[:site_size],
-        marker = p[:site_marker]
+
+    bond_width  = pop!(p.attributes, :bond_width)
+    bond_attributes = Attributes(
+        color  = pop!(p.attributes, :bond_color),
+        # matcap = pop!(p.attributes, :bond_matcap)
     )
+
+    site_attributes = Attributes(
+        color       = pop!(p.attributes, :site_color),
+        markersize  = pop!(p.attributes, :site_size),
+        marker      = pop!(p.attributes, :site_marker),
+        # matcap      = pop!(p.attributes, :site_matcap)
+    )
+    merge!(site_attributes, p.attributes)
+    meshscatter!(p, lattice; site_attributes...)
 
     # Need to do some explicit construction to make cylinder work
     _sites = map(sites, lattice)
     _bonds = map(bonds, lattice)
-
+    
     dir = map(_sites, _bonds) do s, bs
         dir = Point{3, Float32}[]
         for b in bs
@@ -241,18 +253,17 @@ function AbstractPlotting.plot!(p::Plot(LT)) where {
         end
         dir
     end
-
-    marker = map(p[:bond_width]) do w
+    
+    marker = map(bond_width) do w
         Cylinder(Point3f0(0), Point3f0(0, 0, 1), Float32(w))
     end
 
-    meshscatter!(
-        p, _bonds, _sites,
+    merge!(bond_attributes, Attributes(
         marker = marker,
         rotations = map(vs -> normalize.(vs), dir),
-        markersize = map(vs -> norm.(vs), dir),
-        color = p[:bond_color]
-    )
+        markersize = map(vs -> norm.(vs), dir)
+    ))
+    meshscatter!(p, _bonds, _sites; bond_attributes...)
 end
 
 
@@ -276,18 +287,22 @@ end
 function AbstractPlotting.plot!(p::Plot(L)) where {
         LS,S<:AbstractSite{LS,2},L<:AbstractLattice{S}
     }
-    linesegments!(
-        p, p[1],
-        linewidth = p[:bond_width],
-        color = p[:bond_color]
+    bond_attributes = Attributes(
+        linewidth  = pop!(p.attributes, :bond_width),
+        color      = pop!(p.attributes, :bond_color)
     )
 
-    scatter!(
-        p, p[1],
-        color = p[:site_color],
-        markersize = p[:site_size],
-        marker = p[:site_marker]
+    site_attributes = Attributes(
+        color       = pop!(p.attributes, :site_color),
+        markersize  = pop!(p.attributes, :site_size),
+        marker      = pop!(p.attributes, :site_marker),
     )
+
+    merge!(site_attributes, p.attributes)
+    scatter!(p, p[1]; site_attributes...)
+
+    merge!(bond_attributes, p.attributes)
+    linesegments!(p, p[1]; bond_attributes...)
 end
 
 
