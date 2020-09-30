@@ -213,10 +213,10 @@ function default_theme(scene::SceneLike, ::Type{<: Plot(LT)}) where {
         site_color = :orange,
         site_size = 0.1,
         site_marker = Sphere(Point3f0(0), 1f0),
-        # site_matcap = nothing,
+        site_matcap = nothing,
         bond_color = :white,
         bond_width = 0.05,
-        # bond_matcap = nothing
+        bond_matcap = nothing
     )
 end
 
@@ -228,14 +228,14 @@ function AbstractPlotting.plot!(p::Plot(LT)) where {
     bond_width  = pop!(p.attributes, :bond_width)
     bond_attributes = Attributes(
         color  = pop!(p.attributes, :bond_color),
-        # matcap = pop!(p.attributes, :bond_matcap)
+        matcap = pop!(p.attributes, :bond_matcap)
     )
 
     site_attributes = Attributes(
         color       = pop!(p.attributes, :site_color),
         markersize  = pop!(p.attributes, :site_size),
         marker      = pop!(p.attributes, :site_marker),
-        # matcap      = pop!(p.attributes, :site_matcap)
+        matcap      = pop!(p.attributes, :site_matcap)
     )
     merge!(site_attributes, p.attributes)
     meshscatter!(p, lattice; site_attributes...)
@@ -360,3 +360,5 @@ end
 function AbstractPlotting.plot!(p::Plot(BS)) where {BS <: AbstractBandstructure}
     linesegments!(p, const_lift(p[1]); Attributes(p)...)
 end
+
+
