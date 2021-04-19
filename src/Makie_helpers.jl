@@ -15,7 +15,7 @@ function setup_axis!(scene, obj)
         return setup_axis!(scene, const_lift(obj))
     end
 end
-function setup_axis!(ax::LAxis, bs::Node{BS}) where {BS <: AbstractBandstructure}
+function setup_axis!(ax::Axis, bs::Node{BS}) where {BS <: AbstractBandstructure}
     ax.xlabel = "Momentum"
     ax.ylabel = "Energy"
     on(bs) do bs
