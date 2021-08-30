@@ -44,8 +44,6 @@ end
 
 
 # Lattice
-
-
 convert_arguments(P::Type{<:Scatter}, l::AbstractLattice) =
     convert_arguments(P, sites(l))
 convert_arguments(P::Type{<:MeshScatter}, l::AbstractLattice) =
@@ -90,17 +88,15 @@ function BZ_to_mesh(bz::BZ) where {
     end
     normal_mesh(points, _faces)
 end
-convert_arguments(P::Type{<:AbstractPlotting.Mesh}, bz::AbstractBrillouinZone) =
+function convert_arguments(P::Type{<: MakieCore.Mesh}, bz::AbstractBrillouinZone)
     convert_arguments(P, BZ_to_mesh(bz))
-convert_arguments(P::Type{<:AbstractPlotting.Wireframe}, bz::AbstractBrillouinZone) =
+end
+function convert_arguments(P::Type{<: Wireframe}, bz::AbstractBrillouinZone)
     convert_arguments(P, BZ_to_mesh(bz))
+end
 
 # Only really works with one face
-function convert_arguments(P::Type{<:Lines}, bz::BZ) where {
-        D, PT <: AbstractReciprocalPoint{D},
-        R <: AbstractReciprocalUnitcell{PT},
-        BZ <: AbstractBrillouinZone{R}
-    }
+function convert_arguments(P::Type{<:Lines}, bz::AbstractBrillouinZone)
     points = Point{D, Float32}.(corners(bz))
     face_points = [points[i] for f in LatPhysReciprocal.faces(bz) for i in [f..., f[1]]]
     convert_arguments(P, face_points)
@@ -159,12 +155,7 @@ function convert_arguments(P::Type{<:Scatter}, em::EM) where {
     }
     convert_arguments(P, Point{D, Float32}.(kpoints(em)))
 end
-function convert_arguments(P::Type{<:Contour}, em::EM) where {
-        LS, S <: AbstractSite{LS,2},
-        L, UC <: AbstractUnitcell{S},
-        H <: AbstractHamiltonian{L,UC},
-        EM <: AbstractEnergyManifold{H}
-    }
+function convert_arguments(P::Type{<:Contour}, em::AbstractEnergyManifold)
     convert_arguments(P,
         range(-2pi, 2pi, length=100),
         range(-2pi, 2pi, length=100),
@@ -194,7 +185,7 @@ end
 ################################################################################
 
 
-# TODO: this probably exists in AbstractPlotting...
+# TODO: this probably exists in Makie...
 const_lift(o::Node) = o
 const_lift(x) = Node(x)
 #Attributes(p::AbstractPlot; kwargs...) = merge(Attributes(; kwargs...), Attributes(p))
@@ -220,7 +211,7 @@ function default_theme(scene::SceneLike, ::Type{<: Plot(LT)}) where {
     )
 end
 
-function AbstractPlotting.plot!(p::Plot(LT)) where {
+function plot!(p::Plot(LT)) where {
         T, S <: AbstractSite{T, 3}, LT <: AbstractLattice{S}
     }
     lattice = const_lift(p[1])
@@ -275,16 +266,18 @@ end
 function default_theme(scene::SceneLike, ::Type{<: Plot(L)}) where {
         LS,S<:AbstractSite{LS,2},L<:AbstractLattice{S}
     }
+    scatter_defaults = default_theme(scene, Scatter)
+    line_defaults = default_theme(scene, Lines)
     Attributes(
         site_color = :orange,
-        site_size = 20.0,
-        site_marker = '●',
+        site_size = scatter_defaults[:markersize][],
+        site_marker = scatter_defaults[:marker][],
         bond_color = :grey,
-        bond_width = 3
+        bond_width = line_defaults[:linewidth][]
     )
 end
 
-function AbstractPlotting.plot!(p::Plot(L)) where {
+function plot!(p::Plot(L)) where {
         LS,S<:AbstractSite{LS,2},L<:AbstractLattice{S}
     }
     bond_attributes = Attributes(
@@ -320,7 +313,7 @@ function default_theme(scene::SceneLike, ::Type{<: Plot(P)}) where {P<:AbstractR
     )
 end
 
-function AbstractPlotting.plot!(p::Plot(P)) where {P <: AbstractReciprocalPath}
+function plot!(p::Plot(P)) where {P <: AbstractReciprocalPath}
     stripped = Attributes(p)
     mc = pop!(stripped, :markercolor)
     lc = pop!(stripped, :linecolor)
@@ -340,7 +333,7 @@ function default_theme(scene::SceneLike, ::Type{<: Plot(BZ)}) where {BZ<:Abstrac
     )
 end
 
-function AbstractPlotting.plot!(p::Plot(BZ)) where {BZ <: AbstractBrillouinZone}
+function plot!(p::Plot(BZ)) where {BZ <: AbstractBrillouinZone}
     linesegments!(p, p[1]; Attributes(p)...)
     scatter!(p, p[1]; Attributes(p)..., visible=p[:BZ_corners])
 end
@@ -357,7 +350,7 @@ function default_theme(scene::SceneLike, ::Type{<: Plot(BS)}) where {BS <: Abstr
     Attributes()
 end
 
-function AbstractPlotting.plot!(p::Plot(BS)) where {BS <: AbstractBandstructure}
+function plot!(p::Plot(BS)) where {BS <: AbstractBandstructure}
     linesegments!(p, const_lift(p[1]); Attributes(p)...)
 end
 

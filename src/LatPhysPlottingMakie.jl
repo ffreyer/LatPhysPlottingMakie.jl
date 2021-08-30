@@ -6,11 +6,11 @@ using LatPhysBase, LatPhysReciprocal, LatPhysBandstructures
 using LinearAlgebra, Printf
 using Statistics: mean
 using GeometryBasics
-@reexport using Makie, Makie.AbstractPlotting.MakieLayout
+using Makie, MakieCore
 @reexport using Colors
 
-import AbstractPlotting: convert_arguments, PointBased, Plot, default_theme,
-                         plot!, automatic, Attributes
+import MakieCore: convert_arguments, PointBased, Plot, default_theme,
+    plot!, automatic, Attributes
 
 include("colorcodes.jl")
 include("Makie_helpers.jl")
