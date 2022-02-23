@@ -121,12 +121,12 @@ end
 # Bandstructure (doesn't really make sense for anything but scatter, whatever)
 function convert_arguments(P::Type{<:Scatter}, bs::AbstractBandstructure)
     k_point_indices = zeros(Int64, length(energies(bs))+1)
-    points = Point2f0[]
+    points = Point2f[]
     for s in 1:length(energies(bs))
         k_point_indices[s+1] = length(energies(bs)[s][1]) + k_point_indices[s] - 1
         xvals = range(k_point_indices[s], stop=k_point_indices[s+1], length=length(energies(bs)[s][1]))
         for band in energies(bs)[s]
-            append!(points, Point2f0.(xvals, band))
+            append!(points, Point2f.(xvals, band))
         end
     end
     convert_arguments(P, points)
@@ -134,12 +134,12 @@ end
 
 function convert_arguments(P::Type{<:LineSegments}, bs::AbstractBandstructure)
     k_point_indices = zeros(Int64, length(energies(bs))+1)
-    points = Point2f0[]
+    points = Point2f[]
     for s in 1:length(energies(bs))
         k_point_indices[s+1] = length(energies(bs)[s][1]) + k_point_indices[s] - 1
         xvals = range(k_point_indices[s], stop=k_point_indices[s+1], length=length(energies(bs)[s][1]))
         for band in energies(bs)[s]
-            append!(points, [p for p in Point2f0.(xvals, band) for _ in 1:2][2:end-1])
+            append!(points, [p for p in Point2f.(xvals, band) for _ in 1:2][2:end-1])
         end
     end
     convert_arguments(P, points)
@@ -186,8 +186,8 @@ end
 
 
 # TODO: this probably exists in Makie...
-const_lift(o::Node) = o
-const_lift(x) = Node(x)
+const_lift(o::Observable) = o
+const_lift(x) = Observable(x)
 #Attributes(p::AbstractPlot; kwargs...) = merge(Attributes(; kwargs...), Attributes(p))
 
 
@@ -203,7 +203,7 @@ function default_theme(scene::SceneLike, ::Type{<: Plot(LT)}) where {
     Attributes(
         site_color = :orange,
         site_size = 0.1,
-        site_marker = Sphere(Point3f0(0), 1f0),
+        site_marker = Sphere(Point3f(0), 1f0),
         site_matcap = nothing,
         bond_color = :white,
         bond_width = 0.05,
@@ -246,7 +246,7 @@ function plot!(p::Plot(LT)) where {
     end
     
     marker = map(bond_width) do w
-        Cylinder(Point3f0(0), Point3f0(0, 0, 1), Float32(w))
+        Cylinder(Point3f(0), Point3f(0, 0, 1), Float32(w))
     end
 
     merge!(bond_attributes, Attributes(

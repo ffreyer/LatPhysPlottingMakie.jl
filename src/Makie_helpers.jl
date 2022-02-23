@@ -1,21 +1,21 @@
 function VestaTheme()
     Theme(
-        ambient   = Vec3f0(0.1),
-        diffuse   = Vec3f0(0.9),
-        specular  = Vec3f0(0.8),
+        ambient   = Vec3f(0.1),
+        diffuse   = Vec3f(0.9),
+        specular  = Vec3f(0.8),
         shininess = 32f0
     )
 end
 
 
 function setup_axis!(scene, obj)
-    if obj isa Node
+    if obj isa Observable
         throw(MethodError(setup_axis!, (scene, obj)))
     else
         return setup_axis!(scene, const_lift(obj))
     end
 end
-function setup_axis!(ax::Axis, bs::Node{BS}) where {BS <: AbstractBandstructure}
+function setup_axis!(ax::Axis, bs::Observable{BS}) where {BS <: AbstractBandstructure}
     ax.xlabel = "Momentum"
     ax.ylabel = "Energy"
     on(bs) do bs
@@ -30,11 +30,11 @@ function setup_axis!(ax::Axis, bs::Node{BS}) where {BS <: AbstractBandstructure}
 
     ax
 end
-function setup_axis!(ls::LScene, bz::Node{BZ}) where {BZ <: AbstractBrillouinZone}
+function setup_axis!(ls::LScene, bz::Observable{BZ}) where {BZ <: AbstractBrillouinZone}
     setup_axis!(ls.scene, bz)
 
 end
-function setup_axis!(s::Scene, bz::Node{BZ}) where {BZ <: AbstractBrillouinZone}
+function setup_axis!(s::Scene, bz::Observable{BZ}) where {BZ <: AbstractBrillouinZone}
     s.show_axis = false
     s.update_limits = false
     on(bz) do bz
