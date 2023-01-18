@@ -216,19 +216,24 @@ function plot!(p::Plot(LT)) where {
     }
     lattice = const_lift(p[1])
 
-    bond_width  = pop!(p.attributes, :bond_width)
-    bond_attributes = Attributes(
-        color  = pop!(p.attributes, :bond_color),
-        matcap = pop!(p.attributes, :bond_matcap)
-    )
+    attr = copy(p.attributes)
+    bond_width = pop!(attr, :bond_width)
+    bond_color = pop!(attr, :bond_color)
+    bond_matcap = pop!(attr, :bond_matcap)
 
-    site_attributes = Attributes(
-        color       = pop!(p.attributes, :site_color),
-        markersize  = pop!(p.attributes, :site_size),
-        marker      = pop!(p.attributes, :site_marker),
-        matcap      = pop!(p.attributes, :site_matcap)
-    )
-    merge!(site_attributes, p.attributes)
+    site_color      = pop!(attr, :site_color)
+    site_markersize = pop!(attr, :site_size)
+    site_marker     = pop!(attr, :site_marker)
+    site_matcap     = pop!(attr, :site_matcap)
+
+    bond_attributes = merge(attr, Attributes(
+        color = bond_color, matcap = bond_matcap
+    ))
+
+    site_attributes = merge(attr, Attributes(
+        color = site_color, markersize = site_markersize,
+        marker = site_marker, matcap = site_matcap
+    ))
     meshscatter!(p, lattice; site_attributes...)
 
     # Need to do some explicit construction to make cylinder work
