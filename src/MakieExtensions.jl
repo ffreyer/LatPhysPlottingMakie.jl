@@ -197,8 +197,8 @@ const_lift(x) = Observable(x)
 
 
 # TODO: How do I get all default attributes in here and pass them?
-function default_theme(scene::SceneLike, ::Type{<: Plot(LT)}) where {
-        T, S <: AbstractSite{T, 3}, LT <: AbstractLattice{S}
+function default_theme(scene::SceneLike, ::Type{<: Plot{F, LT}}) where {
+        T, S <: AbstractSite{T, 3}, LT <: AbstractLattice{S}, F
     }
     Attributes(
         site_color = :orange,
@@ -211,8 +211,8 @@ function default_theme(scene::SceneLike, ::Type{<: Plot(LT)}) where {
     )
 end
 
-function plot!(p::Plot(LT)) where {
-        T, S <: AbstractSite{T, 3}, LT <: AbstractLattice{S}
+function plot!(p::Plot{F, LT}) where {
+        T, S <: AbstractSite{T, 3}, LT <: AbstractLattice{S}, F
     }
     lattice = const_lift(p[1])
 
@@ -268,8 +268,8 @@ end
 ########################################
 
 
-function default_theme(scene::SceneLike, ::Type{<: Plot(L)}) where {
-        LS,S<:AbstractSite{LS,2},L<:AbstractLattice{S}
+function default_theme(scene::SceneLike, ::Type{<: Plot{F, L}}) where {
+        LS,S<:AbstractSite{LS,2},L<:AbstractLattice{S}, F
     }
     scatter_defaults = default_theme(scene, Scatter)
     line_defaults = default_theme(scene, Lines)
@@ -282,8 +282,8 @@ function default_theme(scene::SceneLike, ::Type{<: Plot(L)}) where {
     )
 end
 
-function plot!(p::Plot(L)) where {
-        LS,S<:AbstractSite{LS,2},L<:AbstractLattice{S}
+function plot!(p::Plot{F, L}) where {
+        LS,S<:AbstractSite{LS,2},L<:AbstractLattice{S}, F
     }
     bond_attributes = Attributes(
         linewidth  = pop!(p.attributes, :bond_width),
@@ -311,14 +311,14 @@ end
 
 # Not gonna do special 3D paths now...
 # see lattice recipe if you want to add it
-function default_theme(scene::SceneLike, ::Type{<: Plot(P)}) where {P<:AbstractReciprocalPath}
+function default_theme(scene::SceneLike, ::Type{<: Plot{F, P}}) where {F, P<:AbstractReciprocalPath}
     Attributes(
         markercolor = :gray65,
         linecolor = :black
     )
 end
 
-function plot!(p::Plot(P)) where {P <: AbstractReciprocalPath}
+function plot!(p::Plot{F, P}) where {P <: AbstractReciprocalPath, F}
     stripped = Attributes(p)
     mc = pop!(stripped, :markercolor)
     lc = pop!(stripped, :linecolor)
@@ -332,13 +332,13 @@ end
 ########################################
 
 # TODO: use spheres as corners?
-function default_theme(scene::SceneLike, ::Type{<: Plot(BZ)}) where {BZ<:AbstractBrillouinZone}
+function default_theme(scene::SceneLike, ::Type{<: Plot{F, BZ}}) where {F, BZ<:AbstractBrillouinZone}
     Attributes(
         BZ_corners = true
     )
 end
 
-function plot!(p::Plot(BZ)) where {BZ <: AbstractBrillouinZone}
+function plot!(p::Plot{F, BZ}) where {BZ <: AbstractBrillouinZone, F}
     linesegments!(p, p[1]; Attributes(p)...)
     scatter!(p, p[1]; Attributes(p)..., visible=p[:BZ_corners])
 end
@@ -351,11 +351,11 @@ end
 # Not using lines here to make this very... interactive?
 # Using scatter allows us to collect all points here, which means
 # the number of bands in a bandstructure can also change without breaking the plot
-function default_theme(scene::SceneLike, ::Type{<: Plot(BS)}) where {BS <: AbstractBandstructure}
+function default_theme(scene::SceneLike, ::Type{<: Plot{F, BS}}) where {F, BS <: AbstractBandstructure}
     Attributes()
 end
 
-function plot!(p::Plot(BS)) where {BS <: AbstractBandstructure}
+function plot!(p::Plot{F, BS}) where {F, BS <: AbstractBandstructure}
     linesegments!(p, const_lift(p[1]); Attributes(p)...)
 end
 
